@@ -37,8 +37,8 @@ namespace gui
             QString voteType;  // BPI or BPM
             quint32 voteValue; // the BPI or BPM value (90, 120, 16, 32, etc)
             quint32 expirationTime; // voting expiration time in seconds;
-            quint8 maxVotes;
             quint8 currentVote;
+            quint8 maxVotes;
         };
 
         struct ServerInviteMessage

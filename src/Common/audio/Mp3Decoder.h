@@ -1,9 +1,13 @@
 #ifndef JT_CODEC_H
 #define JT_CODEC_H
 
+#ifdef __LINUX_LAME__
+#include "lame/lame.h"
+#else
 extern "C" { // this give me a error in linux
-    #include "minimp3.h"
+    #include "../Common/minimp3/minimp3.h"
 }
+#endif
 
 #include <QByteArray>
 #include "audio/core/SamplesBuffer.h"
@@ -39,11 +43,20 @@ public:
 private:
     static const int MINIMUM_SIZE_TO_DECODE;
     static const int AUDIO_SAMPLES_BUFFER_MAX_SIZE;
+#ifdef __LINUX_LAME__
+    static const int INTERNAL_SHORT_BUFFER_SIZE = LAME_MAXMP3BUFFER;
+
+    hip_t mp3Decoder;
+    mp3data_struct mp3Info;
+    short internalShortBuffer_l[INTERNAL_SHORT_BUFFER_SIZE];
+    short internalShortBuffer_r[INTERNAL_SHORT_BUFFER_SIZE];
+#else
     static const int INTERNAL_SHORT_BUFFER_SIZE = MP3_MAX_SAMPLES_PER_FRAME * 8 * 2; // recommended by minimp3 author
 
     mp3_decoder_t mp3Decoder;
     mp3_info_t mp3Info;
     signed short internalShortBuffer[INTERNAL_SHORT_BUFFER_SIZE];
+#endif
     SamplesBuffer buffer;
     QByteArray array;
 };

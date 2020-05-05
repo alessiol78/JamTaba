@@ -28,16 +28,22 @@ namespace ninjam
 
 namespace audio
 {
-    class VSTPluginFinder;
     class Plugin;
     class AudioDriver;
     class PluginDescriptor;
 }
 
-using audio::VSTPluginFinder;
 using audio::Plugin;
 using audio::AudioDriver;
 using audio::PluginDescriptor;
+
+#ifdef USE_VST_PLUGIN
+namespace audio
+{
+    class VSTPluginFinder;
+}
+using audio::VSTPluginFinder;
+#endif
 
 namespace controller
 {
@@ -102,11 +108,12 @@ namespace controller
 
         void cancelPluginFinders();
 
+#ifdef USE_VST_PLUGIN
         inline VSTPluginFinder *getVstPluginFinder() const
         {
             return vstPluginFinder.data();
         }
-
+#endif
         void removePlugin(int inputTrackIndex, Plugin *PLUGIN);
         QMap<QString, QList<PluginDescriptor> > getPluginsDescriptors(
             PluginDescriptor::Category category);
@@ -178,10 +185,12 @@ namespace controller
 
         bool inputIndexIsValid(int inputIndex);
 
+#ifdef USE_VST_PLUGIN
         QScopedPointer<VSTPluginFinder> vstPluginFinder;
+#endif
 #ifdef Q_OS_MAC
         QScopedPointer<audio::AudioUnitPluginFinder> auPluginFinder;
- #endif
+#endif
 
         // used to sort plugins list
         static bool pluginDescriptorLessThan(const PluginDescriptor &d1,

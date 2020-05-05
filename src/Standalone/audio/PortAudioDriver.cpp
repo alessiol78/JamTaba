@@ -78,7 +78,7 @@ bool PortAudioDriver::initPortAudio(int sampleRate, int bufferSize)
 
     if (device != paNoDevice) { // avoid query sample rates in a invalid device
         QList<int> validSampleRates = getValidSampleRates(device);
-        if (this->sampleRate > validSampleRates.last()) {
+        if (!validSampleRates.isEmpty() && this->sampleRate > validSampleRates.last()) {
             this->sampleRate = validSampleRates.last(); // use the max supported sample rate
         }
     }

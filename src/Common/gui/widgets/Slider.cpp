@@ -25,16 +25,16 @@ bool AudioSlider::paintingRMS = true;
 
 AudioSlider::AudioSlider(QWidget *parent) :
     QSlider(parent),
-    lastUpdate(QDateTime::currentMSecsSinceEpoch()),
-    decayTime(DEFAULT_DECAY_TIME),
     rmsColor(QColor(255, 255, 255, 200)),
+    maxPeakColor(QColor(0, 0, 0, 80)),
     peakStartColor(Qt::darkGreen),
     peakEndColor(Qt::red),
-    maxPeakColor(QColor(0, 0, 0, 80)),
     dBMarksColor(Qt::lightGray),
+    drawSegments(true),
     stereo(true),
     paintingDbMarkers(true),
-    drawSegments(true),
+    lastUpdate(QDateTime::currentMSecsSinceEpoch()),
+    decayTime(DEFAULT_DECAY_TIME),
     showMeterOnly(false),
     showSliderOnly(false)
 {

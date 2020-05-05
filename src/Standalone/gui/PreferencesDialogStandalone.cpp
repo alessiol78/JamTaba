@@ -289,6 +289,7 @@ void PreferencesDialogStandalone::populateAsioDriverCombo()
 
     for (int d = 0; d < devices; d++) {
         auto name = audioDriver->getAudioDeviceInfo(d, nIn, nOut);
+        if (!nIn && !nOut) continue;
         if (nIn>0) {
             ui->comboAudioInputDevice->addItem(name, d); // using device index as userData in comboBox
             if (currentInputDeviceIndex==d) markIn=posIn; else posIn++;

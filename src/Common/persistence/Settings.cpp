@@ -239,13 +239,13 @@ AudioSettings::AudioSettings() :
     SettingsObject("audio"),
     sampleRate(44100),
     bufferSize(128),
-    encodingQuality(vorbis::EncoderQualityNormal),
     firstIn(-1),
     firstOut(-1),
     lastIn(-1),
     lastOut(-1),
     audioInputDevice(-1),
-    audioOutputDevice(-1)
+    audioOutputDevice(-1),
+    encodingQuality(vorbis::EncoderQualityNormal)
 {
     qCDebug(jtSettings) << "AudioSettings ctor";
 }

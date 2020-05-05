@@ -52,11 +52,11 @@ qreal getDistance(const QPointF &p1, const QPointF &p2)
 
 MapWidget::MapWidget(QWidget *parent) :
     QWidget(parent),
-    blurActivated(false),
     markerTextBackgroundColor(QColor(0, 0, 0, 120)),
     markerColor(Qt::red),
     markerTextColor(Qt::white),
-    markerLineConnectorColor(QColor(0, 0, 0, 180))
+    markerLineConnectorColor(QColor(0, 0, 0, 180)),
+    blurActivated(false)
 {
     loadTiles();
     setCenter(QPointF(0, 0));
@@ -602,7 +602,7 @@ struct MapMarkerComparator
 {
     QPointF anchor;
     const MapWidget *mapWidget;
-    MapMarkerComparator(const MapWidget *mapWidget, const QPointF &anchor) : mapWidget(mapWidget), anchor(anchor){}
+    MapMarkerComparator(const MapWidget *mapWidget, const QPointF &anchor) : anchor(anchor), mapWidget(mapWidget){}
     bool operator()(const MapMarker &m1, const MapMarker &m2)
     {
         qreal deltaM1 = getDistance(mapWidget->getMarkerScreenCoordinate(m1), anchor);

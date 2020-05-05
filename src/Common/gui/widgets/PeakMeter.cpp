@@ -111,13 +111,13 @@ float BaseMeter::limitFloatValue(float value, float minValue, float maxValue)
 AudioMeter::AudioMeter(QWidget *parent) :
       BaseMeter(parent),
       rmsColor(QColor(255, 255, 255, 200)),
+      maxPeakColor(QColor(0, 0, 0, 80)),
       peakStartColor(Qt::darkGreen),
       peakEndColor(Qt::red),
-      maxPeakColor(QColor(0, 0, 0, 80)),
       dBMarksColor(Qt::lightGray),
+      drawSegments(true),
       stereo(true),
-      paintingDbMarkers(true),
-      drawSegments(true)
+      paintingDbMarkers(true)
 {
     setAutoFillBackground(false);
 

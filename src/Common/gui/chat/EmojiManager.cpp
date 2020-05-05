@@ -27,8 +27,8 @@ const QMap<QString, QString> EmojiManager::combinationsMap = EmojiManager::getCo
 
 
 Emoji::Emoji(const QString &name, const QString category, uint sortOrder, const QString &unifiedCode) :
-    name(name),
     category(category),
+    name(name),
     sortOrder(sortOrder),
     unifiedCode(unifiedCode)
 {

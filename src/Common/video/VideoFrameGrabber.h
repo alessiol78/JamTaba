@@ -30,7 +30,8 @@ public:
 
     explicit CameraFrameGrabber(QObject * parent);
 
-    inline QList<QVideoFrame::PixelFormat>supportedPixelFormats(QAbstractVideoBuffer::HandleType type) const override
+    inline QList<QVideoFrame::PixelFormat>supportedPixelFormats(
+            QAbstractVideoBuffer::HandleType type) const override
     {
         if (type == QAbstractVideoBuffer::NoHandle) {
              return QList<QVideoFrame::PixelFormat>()

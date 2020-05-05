@@ -13,7 +13,9 @@
 #include "miniwget.h"
 #include "upnpcommands.h"
 #include "upnperrors.h"
+#if MINIUPNPC_API_VERSION > 10
 #include "miniupnpcstrings.h"
+#endif
 
 UPnPManager::UPnPManager() :
     QObject(nullptr),
@@ -52,12 +54,15 @@ QString UPnPManager::getExternalIp() const
 void UPnPManager::openPort(quint16 port)
 {
     int ipv6 = 0;
-    unsigned char ttl = 2;	/* defaulting to 2 */
-    int localport = UPNP_LOCAL_PORT_ANY;
     int error = 0;
 
+#if MINIUPNPC_API_VERSION >= 10
+    devlist = upnpDiscover(2000, 0, 0, 0, ipv6, &error);
+#else
+    unsigned char ttl = 2;	/* defaulting to 2 */
+    int localport = UPNP_LOCAL_PORT_ANY;
     devlist = upnpDiscover(2000, 0, 0, localport, ipv6, ttl, &error);
-
+#endif
     if(!devlist) {
         emit errorDetected(QString("Error discovering UpNp devices (code: %1)").arg(error));
         return;

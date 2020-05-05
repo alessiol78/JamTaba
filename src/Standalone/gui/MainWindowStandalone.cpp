@@ -6,8 +6,10 @@
 #include "gui/PluginScanDialog.h"
 #include "log/Logging.h"
 #include "audio/core/PluginDescriptor.h"
+#ifdef USE_VST_PLUGIN
 #include "vst/VstPluginFinder.h"
 #include "vst/VstPlugin.h"
+#endif
 
 #include <QTimer>
 #include <QDesktopWidget>
@@ -84,6 +86,7 @@ void MainWindowStandalone::setupSignals()
     connect(ui.actionFullscreenMode, &QAction::triggered, this,
             &MainWindowStandalone::toggleFullScreen);
 
+#ifdef USE_VST_PLUGIN
     auto pluginFinder = controller->getVstPluginFinder();
     if (!pluginFinder)
         return;
@@ -102,6 +105,7 @@ void MainWindowStandalone::setupSignals()
 
     connect(pluginFinder, &VSTPluginFinder::pluginScanStarted, this,
             &MainWindowStandalone::setCurrentScanningPlugin);
+#endif
 }
 
 void MainWindowStandalone::doWindowInitialization()
@@ -252,6 +256,7 @@ void MainWindowStandalone::restoreLocalSubchannelPluginsList(
     LocalTrackViewStandalone *subChannelView, const SubChannel &subChannel)
 {
     // create the plugins list
+#ifdef USE_VST_PLUGIN
     for (const auto &plugin : subChannel.getPlugins()) {
         auto category = static_cast<audio::PluginDescriptor::Category>(plugin.category);
 
@@ -277,6 +282,7 @@ void MainWindowStandalone::restoreLocalSubchannelPluginsList(
             // QApplication::processEvents();
         }
     }
+#endif
 }
 
 void MainWindowStandalone::initializeLocalSubChannel(LocalTrackView *subChannelView, const SubChannel &subChannel)
@@ -302,11 +308,13 @@ LocalTrackGroupViewStandalone *MainWindowStandalone::createLocalTrackGroupView(i
 QList<persistence::Plugin> buildPersistentPluginList(QList<const audio::Plugin *> trackPlugins)
 {
     QList<persistence::Plugin> persistentPlugins;
+#ifdef USE_VST_PLUGIN
     for (auto p : trackPlugins) {
         QByteArray serializedData = p->getSerializedData();
         persistence::Plugin plugin(p->getDescriptor(), p->isBypassed(), serializedData);
         persistentPlugins.append(plugin);
     }
+#endif
     return persistentPlugins;
 }
 
@@ -395,6 +403,7 @@ PreferencesDialog *MainWindowStandalone::createPreferencesDialog()
     connect(dialog, &PreferencesDialogStandalone::bufferSizeChanged, controller,
             &MainControllerStandalone::setBufferSize);
 
+#ifdef USE_VST_PLUGIN
     VSTPluginFinder *vstFinder = controller->getVstPluginFinder();
     connect(vstFinder, &VSTPluginFinder::scanFinished, dialog,
             &PreferencesDialogStandalone::populateVstTab);
@@ -404,6 +413,7 @@ PreferencesDialog *MainWindowStandalone::createPreferencesDialog()
             &PreferencesDialogStandalone::addFoundedVstPlugin);
     connect(vstFinder, &VSTPluginFinder::pluginScanStarted, dialog,
             &PreferencesDialogStandalone::setCurrentScannedVstPlugin);
+#endif
 
     connect(dialog, &PreferencesDialogStandalone::vstScanDirRemoved, controller,
             &MainControllerStandalone::removePluginsScanPath);

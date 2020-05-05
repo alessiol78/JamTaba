@@ -18,10 +18,10 @@ ChatTabWidget::ChatTabWidget(QWidget *parent) :
     QFrame(parent),
     tabBar(new QTabBar(this)),
     stackWidget(new QStackedWidget(this)),
-    mainChat(nullptr),
-    ninjamServerChat(nullptr),
+    mainChatColorsPool(new UsersColorsPool()),
     privateChatColorsPool(new UsersColorsPool()),
-    mainChatColorsPool(new UsersColorsPool())
+    ninjamServerChat(nullptr),
+    mainChat(nullptr)
 {
 
     QBoxLayout *layout = new QVBoxLayout();

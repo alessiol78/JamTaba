@@ -6,10 +6,10 @@ const int VideoWidget::MIN_SIZE = 32;
 
 VideoWidget::VideoWidget(QWidget *parent, const QIcon &icon, bool activated) :
     QWidget(parent),
-    activated(activated),
     targetRect(0, 0, VideoWidget::MIN_SIZE, VideoWidget::MIN_SIZE),
-    webcamIcon(icon),
-    imageRatio(0.75)
+    imageRatio(0.75),
+    activated(activated),
+    webcamIcon(icon)
 {
     setMinimumSize(VideoWidget::MIN_SIZE, VideoWidget::MIN_SIZE);
 }

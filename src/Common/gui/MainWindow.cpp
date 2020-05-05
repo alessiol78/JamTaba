@@ -30,7 +30,9 @@
 #include "audio/core/LocalInputNode.h"
 #include "audio/RoomStreamerNode.h"
 #include "performance/PerformanceMonitor.h"
+#ifdef USE_VIDEO_GRABBER
 #include "video/VideoFrameGrabber.h"
+#endif
 #include "chat/NinjamChatMessageParser.h"
 #include "loginserver/MainChat.h"
 #include "TextEditorModifier.h"
@@ -72,7 +74,9 @@ MainWindow::MainWindow(MainController *mainController, QWidget *parent) :
     QMainWindow(parent),
     mainController(mainController),
     camera(nullptr),
+    #ifdef USE_VIDEO_GRABBER
     videoFrameGrabber(nullptr),
+    #endif
     cameraView(nullptr),
     cameraCombo(nullptr),
     cameraLayout(nullptr),
@@ -85,8 +89,8 @@ MainWindow::MainWindow(MainController *mainController, QWidget *parent) :
     buttonCollapseBottomArea(nullptr),
     performanceMonitorLabel(nullptr),
     xmitInactivityDetector(nullptr),
-    screensaverBlocker(new ScreensaverBlocker()),
     usersColorsPool(new UsersColorsPool()),
+    screensaverBlocker(new ScreensaverBlocker()),
     mainChat(new MainChat()),
     ninjamWindow(nullptr),
     roomToJump(nullptr),
@@ -232,9 +236,10 @@ void MainWindow::initializeCamera(const QString &cameraDeviceName)
         QMessageBox::critical(this, tr("Error!"), camera->errorString());
     });
 
+#ifdef USE_VIDEO_GRABBER
     if (videoFrameGrabber)
         camera->setViewfinder(videoFrameGrabber);
-
+#endif
     camera->start();
 
     // setting resolution after start to fix #944 - https://github.com/elieserdejesus/JamTaba/issues/944
@@ -306,9 +311,10 @@ void MainWindow::changeCameraStatus(bool activated)
             camera->deleteLater();
             camera = nullptr;
 
+#ifdef USE_VIDEO_GRABBER
             videoFrameGrabber->deleteLater();
             videoFrameGrabber = nullptr;
-
+#endif
             setCameraComboVisibility(false);
 
             if (localGroupChannels.size() > 1) {
@@ -323,7 +329,7 @@ void MainWindow::changeCameraStatus(bool activated)
     }
 
     // activating the camera?
-
+#ifdef USE_VIDEO_GRABBER
     if (!videoFrameGrabber) {
         videoFrameGrabber = new CameraFrameGrabber(this);
 
@@ -336,15 +342,15 @@ void MainWindow::changeCameraStatus(bool activated)
 
         });
     }
-
+#endif
     initializeCamera(preferredCameraName);
 
     if(camera && camera->state() != QCamera::ActiveState) { // camera is used by another application?
         camera->unload();
-
+#ifdef USE_VIDEO_GRABBER
         videoFrameGrabber->deleteLater();
         videoFrameGrabber = nullptr;
-
+#endif
         cameraView->activate(false);
     }
     else { // if the camera is correctly activated we need need create a 2nd channel to xmit the video
@@ -421,6 +427,7 @@ bool MainWindow::cameraIsActivated() const
 
 QImage MainWindow::pickCameraFrame() const
 {
+#ifdef USE_VIDEO_GRABBER
     if (videoFrameGrabber && cameraView) {
         auto frame = videoFrameGrabber->grab();
         cameraView->setCurrentFrame(frame);
@@ -433,7 +440,7 @@ QImage MainWindow::pickCameraFrame() const
 
         return frame;
     }
-
+#endif
     return QImage();
 }
 

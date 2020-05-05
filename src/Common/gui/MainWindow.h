@@ -192,7 +192,9 @@ protected:
     static const QSize MAIN_WINDOW_MIN_SIZE;
 
     QCamera *camera;
+#ifdef USE_VIDEO_GRABBER
     CameraFrameGrabber *videoFrameGrabber;
+#endif
     VideoWidget *cameraView;
     QComboBox *cameraCombo;
     QVBoxLayout *cameraLayout;

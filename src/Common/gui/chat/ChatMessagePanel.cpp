@@ -17,11 +17,11 @@ ChatMessagePanel::ChatMessagePanel(QWidget *parent, const QString &userFullName,
                                    bool showTranslationButton, bool showBlockButton, Emojifier *emojifier) :
     QFrame(parent),
     ui(new Ui::ChatMessagePanel),
-    userFullName(userFullName),
-    emojifier(emojifier),
-    backgroundColor(backgroundColor),
     showArrow(true),
-    arrowSide(ChatMessagePanel::LeftSide)
+    arrowSide(ChatMessagePanel::LeftSide),
+    backgroundColor(backgroundColor),
+    userFullName(userFullName),
+    emojifier(emojifier)
 {
     ui->setupUi(this);
 

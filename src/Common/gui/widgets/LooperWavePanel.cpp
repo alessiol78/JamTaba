@@ -6,10 +6,10 @@
 
 LooperWavePanel::LooperWavePanel(audio::Looper *looper, quint8 layerIndex) :
       beatsPerInterval(16),
+      samplesPerInterval(0),
+      samplesPerPixel(0),
       lastMaxPeak(0),
       accumulatedSamples(0),
-      samplesPerPixel(0),
-      samplesPerInterval(0),
       looper(looper),
       layerID(layerIndex)
 {

@@ -28,8 +28,8 @@ using audio::SamplesBuffer;
 LooperWindow::LooperWindow(QWidget *parent, MainController *mainController) :
     QDialog(parent),
     ui(new Ui::LooperWindow),
-    mainController(mainController),
     looper(nullptr),
+    mainController(mainController),
     currentBeat(-1)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint); // remove help/question marker

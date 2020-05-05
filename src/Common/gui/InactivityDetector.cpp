@@ -13,8 +13,8 @@ InactivityDetector::InactivityDetector(QWidget *parent, BlinkableButton *button,
     QObject(parent),
     intervalsWithoutTransmit(0),
     intervalsBlinking(0),
-    button(button),
     intervalsBeforeWarning(intervalsBeforeWarning),
+    button(button),
     controller(nullptr)
 {
     Q_ASSERT(button);

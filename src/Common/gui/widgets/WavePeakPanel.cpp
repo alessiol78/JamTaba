@@ -9,13 +9,13 @@
 
 WavePeakPanel::WavePeakPanel(QWidget *parent) :
     QWidget(parent),
-    maxPeaks(0),
-    showingBuffering(false),
-    bufferingPercentage(0),
+    useAlphaInPreviousSamples(true),
     peaksColor(QColor(90, 90, 90)),
     loadingColor(Qt::gray),
-    drawingMode(WavePeakPanel::PIXELED_BUILDINGS),
-    useAlphaInPreviousSamples(true)
+    showingBuffering(false),
+    bufferingPercentage(0),
+    maxPeaks(0),
+    drawingMode(WavePeakPanel::PIXELED_BUILDINGS)
 {
     setAutoFillBackground(false);
     recreatePeaksArray();

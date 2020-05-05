@@ -4,12 +4,16 @@
 #include "midi/MidiMessage.h"
 #include "audio/PortAudioDriver.h"
 #include "audio/core/LocalInputNode.h"
+#include "audio/core/Plugins.h"
+#include "audio/Host.h"
+#ifdef USE_VST_PLUGIN
 #include "vst/VstPlugin.h"
 #include "vst/VstHost.h"
 #include "vst/VstPluginFinder.h"
+#include "vst/VstPluginChecker.h"
+#endif
 #include "audio/core/PluginDescriptor.h"
 #include "NinjamController.h"
-#include "vst/VstPluginChecker.h"
 #include "gui/MainWindowStandalone.h"
 #include "ninjam/client/Service.h"
 
@@ -111,17 +115,20 @@ audio::Plugin *MainControllerStandalone::addPlugin(quint32 inputTrackIndex, quin
                                                    const audio::PluginDescriptor &descriptor)
 {
     auto plugin = createPluginInstance(descriptor);
+#ifdef USE_VST_PLUGIN
     if (plugin)
     {
         plugin->start();
         QMutexLocker locker(&mutex);
         getInputTrack(inputTrackIndex)->addProcessor(plugin, pluginSlotIndex);
     }
+#endif
     return plugin;
 }
 
 void MainControllerStandalone::removePlugin(int inputTrackIndex, audio::Plugin *plugin)
 {
+#ifdef USE_VST_PLUGIN
     QMutexLocker locker(&mutex);
     QString pluginName = plugin->getName();
     try
@@ -134,6 +141,7 @@ void MainControllerStandalone::removePlugin(int inputTrackIndex, audio::Plugin *
     {
         qCritical() << "Error removing plugin " << pluginName;
     }
+#endif
 }
 
 void MainControllerStandalone::addPluginsScanPath(const QString &path)
@@ -262,25 +270,30 @@ void MainControllerStandalone::updateBpm(int newBpm)
 {
     MainController::updateBpm(newBpm);
 
+#ifdef USE_VST_PLUGIN
     for (Host *host : hosts)
         host->setTempo(newBpm);
+#endif
 }
 
 void MainControllerStandalone::connectInNinjamServer(const ServerInfo &server)
 {
     MainController::connectInNinjamServer(server);
 
+#ifdef USE_VST_PLUGIN
     for (auto host : hosts)
         host->setTempo(server.getBpm());
+#endif
 }
 
 void MainControllerStandalone::setSampleRate(int newSampleRate)
 {
     MainController::setSampleRate(newSampleRate);
 
+#ifdef USE_VST_PLUGIN
     for (auto host : hosts)
         host->setSampleRate(newSampleRate);
-
+#endif
     audioDriver->setSampleRate(newSampleRate);
 
     for (auto inputNode : inputTracks)
@@ -289,9 +302,10 @@ void MainControllerStandalone::setSampleRate(int newSampleRate)
 
 void MainControllerStandalone::setBufferSize(int newBufferSize)
 {
+#ifdef USE_VST_PLUGIN
     for (auto host : hosts)
         host->setBlockSize(newBufferSize);
-
+#endif
     audioDriver->setBufferSize(newBufferSize);
     settings.setBufferSize(newBufferSize);
 }
@@ -311,9 +325,10 @@ void MainControllerStandalone::on_audioDriverStopped()
 void MainControllerStandalone::handleNewNinjamInterval()
 {
     MainController::handleNewNinjamInterval();
-
+#ifdef USE_VST_PLUGIN
     for (auto host : hosts)
         host->setPlayingFlag(true);
+#endif
 }
 
 void MainControllerStandalone::setupNinjamControllerSignals()
@@ -326,8 +341,10 @@ void MainControllerStandalone::setupNinjamControllerSignals()
 
 void MainControllerStandalone::on_ninjamStartProcessing(int intervalPosition)
 {
+#ifdef USE_VST_PLUGIN
     for (auto host : hosts)
         host->setPositionInSamples(intervalPosition); // update the vst host time line in every audio callback.
+#endif
 }
 
 void MainControllerStandalone::addFoundedVstPlugin(const QString &name, const QString &path)
@@ -416,6 +433,7 @@ MainControllerStandalone::MainControllerStandalone(persistence::Settings setting
 {
     application->setQuitOnLastWindowClosed(true);
 
+#ifdef USE_VST_PLUGIN
     hosts.append(vst::VstHost::getInstance());
 #ifdef Q_OS_MAC
     hosts.append(au::AudioUnitHost::getInstance());
@@ -423,17 +441,20 @@ MainControllerStandalone::MainControllerStandalone(persistence::Settings setting
 
     connect(vst::VstHost::getInstance(), &vst::VstHost::pluginRequestingWindowResize,
             this, &MainControllerStandalone::setVstPluginWindowSize);
+#endif
 }
 
 void MainControllerStandalone::setVstPluginWindowSize(QString pluginName, int newWidht,
                                                       int newHeight)
 {
+#ifdef USE_VST_PLUGIN
     auto pluginEditorWindow = vst::VstPlugin::getPluginEditorWindow(pluginName);
     if (pluginEditorWindow)
     {
         pluginEditorWindow->setFixedSize(newWidht, newHeight);
         // pluginEditorWindow->updateGeometry();
     }
+#endif
 }
 
 void MainControllerStandalone::start()
@@ -486,6 +507,7 @@ void MainControllerStandalone::start()
     if (midiDriver)
         midiDriver->start(settings.getMidiInputDevicesStatus());
 
+#ifdef USE_VST_PLUGIN
     qCInfo(jtCore) << "Creating plugin finder...";
     vstPluginFinder.reset(new audio::VSTPluginFinder());
 
@@ -500,6 +522,7 @@ void MainControllerStandalone::start()
 
     connect(vstPluginFinder.data(), &audio::VSTPluginFinder::pluginScanFinished, this,
             &MainControllerStandalone::addFoundedVstPlugin);
+#endif
 
     if (audioDriver)
     {
@@ -513,9 +536,10 @@ void MainControllerStandalone::start()
 
 void MainControllerStandalone::cancelPluginFinders()
 {
+#ifdef USE_VST_PLUGIN
     if (vstPluginFinder)
         vstPluginFinder->cancel();
-
+#endif
 #ifdef Q_OS_MAC
 
     if (auPluginFinder)
@@ -543,6 +567,7 @@ audio::Plugin *MainControllerStandalone::createPluginInstance(
         if (descriptor.getName() == "Delay")
             return new audio::JamtabaDelay(audioDriver->getSampleRate());
     }
+#ifdef USE_VST_PLUGIN
     else if (descriptor.isVST())
     {
         auto host = vst::VstHost::getInstance();
@@ -552,7 +577,7 @@ audio::Plugin *MainControllerStandalone::createPluginInstance(
         else
             delete vstPlugin; // avoid a memory leak
     }
-
+#endif
 #ifdef Q_OS_MAC
 
     else if (descriptor.isAU())
@@ -561,7 +586,6 @@ audio::Plugin *MainControllerStandalone::createPluginInstance(
     }
 
 #endif
-
     return nullptr;
 }
 
@@ -632,6 +656,7 @@ void MainControllerStandalone::addDefaultPluginsScanPath()
 
 bool MainControllerStandalone::vstScanIsNeeded() const
 {
+#ifdef USE_VST_PLUGIN
     bool vstCacheIsEmpty = settings.getVstPluginsPaths().isEmpty();
     if (vstCacheIsEmpty)
         return true;
@@ -662,6 +687,9 @@ bool MainControllerStandalone::vstScanIsNeeded() const
     }
 
     return newVstFounded;
+#else
+    return true;
+#endif
 }
 
 #ifdef Q_OS_MAC
@@ -705,6 +733,7 @@ void MainControllerStandalone::scanOnlyNewVstPlugins()
 
 void MainControllerStandalone::scanVstPlugins(bool scanOnlyNewPlugins)
 {
+#ifdef USE_VST_PLUGIN
     if (vstPluginFinder)
     {
         if (!scanOnlyNewPlugins)
@@ -719,6 +748,7 @@ void MainControllerStandalone::scanVstPlugins(bool scanOnlyNewPlugins)
         QStringList foldersToScan = settings.getVstScanFolders();
         vstPluginFinder->scan(foldersToScan, skipList);
     }
+#endif
 }
 
 #ifdef Q_OS_MAC
@@ -739,9 +769,10 @@ void MainControllerStandalone::openExternalAudioControlPanel()
 void MainControllerStandalone::stopNinjamController()
 {
     MainController::stopNinjamController();
-
+#ifdef USE_VST_PLUGIN
     for (Host *host : hosts)
         host->setPlayingFlag(false);
+#endif
 }
 
 void MainControllerStandalone::quit()
@@ -756,13 +787,14 @@ std::vector<midi::MidiMessage> MainControllerStandalone::pullMidiMessagesFromPlu
 {
     // return midi messages created by vst and AU plugins, not by midi controllers.
     std::vector<midi::MidiMessage> receivedMidiMessages;
+#ifdef USE_VST_PLUGIN
     for (auto host : hosts)
     {
         std::vector<midi::MidiMessage> pulledMessages = host->pullReceivedMidiMessages();
         receivedMidiMessages.insert(receivedMidiMessages.end(),
                                     pulledMessages.begin(), pulledMessages.end());
     }
-
+#endif
     return receivedMidiMessages;
 }
 

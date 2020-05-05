@@ -266,10 +266,10 @@ bool JamRoomViewPanel::roomContainsBotsOnly(const login::RoomInfo &roomInfo)
 void JamRoomViewPanel::initialize(const login::RoomInfo &roomInfo)
 {
     QString roomName = roomInfo.getName();
-    if (roomName.endsWith(".com"))
+    if (roomName.endsWith(".com")) {
         roomName = roomName.replace(".com", "");
-
-        roomName += " (" + QString::number(roomInfo.getPort()) + ")";
+    }
+    roomName += " (" + QString::number(roomInfo.getPort()) + ")";
 
     ui->labelName->setText(roomName);
 

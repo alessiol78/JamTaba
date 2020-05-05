@@ -2,7 +2,7 @@
 #define PORT_AUDIO_DRIVER_H
 
 #include "audio/core/AudioDriver.h"
-#include "portaudio.h"
+#include <portaudio.h>
 
 namespace audio {
 

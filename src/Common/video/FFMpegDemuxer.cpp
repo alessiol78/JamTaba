@@ -9,7 +9,6 @@ FFMpegDemuxer::FFMpegDemuxer(QObject *parent, const QByteArray &encodedData) :
     QObject(parent),
     formatContext(nullptr),
     avioContext(nullptr),
-    //codecContext(nullptr),
     swsContext(nullptr),
     frame(nullptr),
     frameRGB(nullptr),
@@ -62,8 +61,13 @@ void FFMpegDemuxer::close()
 
 int FFMpegDemuxer::readCallback(void *stream, uint8_t *buffer, int bufferSize)
 {
-    QIODevice *st = (QIODevice *)stream;
-    return st->read((char *)buffer, bufferSize);
+    if (!stream || !buffer)
+        return 0;
+
+    auto st = reinterpret_cast<QIODevice *>(stream);
+
+    if (st)
+        return st->read((char *)buffer, bufferSize);
 }
 
 bool FFMpegDemuxer::open()
@@ -80,6 +84,10 @@ bool FFMpegDemuxer::open()
 
     //avio_op
     avioContext = avio_alloc_context(buffer, FFMPEG_BUFFER_SIZE, 0, &(this->encodedBuffer), readCallback, nullptr, nullptr);
+
+    if (!avioContext || !formatContext)
+        return false;
+
     avioContext->seekable = 0; // no seek
 
     formatContext->pb = avioContext;
@@ -98,9 +106,15 @@ bool FFMpegDemuxer::open()
 
     auto stream = formatContext->streams[0]; // first stream
 
+    if (!stream) {
+        qWarning() << "Error in FFMpegDemuxer::open, the first stream is null";
+        return false;
+    }
+
     auto codecContext = stream->codec;
 
     /* find decoder for the stream */
+#if LIBAVCODEC_VERSION_MAJOR > 56
     auto decoder = avcodec_find_decoder(stream->codecpar->codec_id);
     if (!decoder) {
         qCritical() << "Failed to find the codec" << avcodec_get_name(stream->codecpar->codec_id);
@@ -112,6 +126,9 @@ bool FFMpegDemuxer::open()
         qCritical() << av_error_to_qt_string(ret);
         return false;
     }
+#else
+#warning @TODO fix on old avcodec
+#endif
 
     if (!codecContext)
         qCritical() << "video codec is null";
@@ -129,9 +146,8 @@ uint FFMpegDemuxer::getFrameRate() const
 {
     if (formatContext && formatContext->nb_streams > 0) {
         auto firstStream = formatContext->streams[0];
-        if (firstStream->codec) {
-            auto codecContext = formatContext->streams[0]->codec;
-            return codecContext->framerate.num;
+        if (firstStream && firstStream->codec) {
+            return firstStream->codec->framerate.num;
         }
     }
 
@@ -153,6 +169,9 @@ void FFMpegDemuxer::decode()
 
     auto codecContext = formatContext->streams[0]->codec;
 
+    if (!codecContext)
+        return;
+
     /* initialize packet, set data to NULL, let the demuxer fill it */
     AVPacket packet;
     packet.data = nullptr;
@@ -165,7 +184,7 @@ void FFMpegDemuxer::decode()
     {
 
         int framesDecoded = 0;
-
+#if LIBAVCODEC_VERSION_MAJOR > 56
         while (framesDecoded <= 0)
         {
             ret = avcodec_send_packet(codecContext, &packet);
@@ -227,6 +246,10 @@ void FFMpegDemuxer::decode()
                 return;
             }
         }
+#else
+#warning @TODO fix on old avcodec
+        return;
+#endif
     }
 
     emit imagesDecoded(decodedImages, getFrameRate());

@@ -18,12 +18,12 @@
 
 LocalTrackGroupView::LocalTrackGroupView(int channelIndex, MainWindow *mainWindow) :
     TrackGroupView(mainWindow),
-    index(channelIndex),
     mainWindow(mainWindow),
-    peakMeterOnly(false),
-    videoChannel(false),
     preparingToTransmit(false),
-    usingSmallSpacingInLayouts(false)
+    usingSmallSpacingInLayouts(false),
+    index(channelIndex),
+    peakMeterOnly(false),
+    videoChannel(false)
 {
     instrumentsButton = createInstrumentsButton();
     topPanelLayout->addWidget(instrumentsButton, 1, Qt::AlignCenter);

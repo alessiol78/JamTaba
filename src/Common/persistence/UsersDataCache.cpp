@@ -141,8 +141,8 @@ void CacheEntry::setGain(float gain)
 }
 
 UsersDataCache::UsersDataCache(const QDir &cacheDir) :
-    CACHE_FILE_NAME("tracks_cache.bin"),
-    cacheDir(cacheDir)
+    cacheDir(cacheDir),
+    CACHE_FILE_NAME("tracks_cache.bin")
 {
     // check if the tracks_cache_bin file is in the old dir and copy the file to the 'cache' dir.
     // This piece of code will be deleted in future versions.

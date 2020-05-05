@@ -46,12 +46,12 @@ NinjamRoomWindow::NinjamRoomWindow(MainWindow *mainWindow, const RoomInfo &roomI
     mainController(mainController),
     ninjamPanel(nullptr),
     metronomePanel(nullptr),
+    roomInfo(roomInfo),
     tracksLayout(TracksLayout::VerticalLayout),
     tracksSize(TracksSize::WIDE),
     metronomeFloatingWindow(nullptr),
-    roomInfo(roomInfo),
-    usersColorsPool(mainWindow->getUsersColorsPool()),
-    chordProgressionDialog(new ChordProgressionCreationDialog(this))
+    chordProgressionDialog(new ChordProgressionCreationDialog(this)),
+    usersColorsPool(mainWindow->getUsersColorsPool())
 {
     qCDebug(jtNinjamGUI) << "NinjamRoomWindow::NinjamRoomWindow ctor";
     ui->setupUi(this);

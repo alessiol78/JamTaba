@@ -153,7 +153,7 @@ void AbstractMp3Streamer::setStreamPath(const QString &streamPath)
 
 // +++++++++++++++++++++++++++++++++++++++
 
-const int NinjamRoomStreamerNode::BUFFER_SIZE = 128000;
+const int NinjamRoomStreamerNode::BUFFER_SIZE = 202000;
 
 NinjamRoomStreamerNode::NinjamRoomStreamerNode(const QUrl &streamPath) :
     AbstractMp3Streamer(new Mp3DecoderMiniMp3()),
@@ -204,9 +204,11 @@ void NinjamRoomStreamerNode::on_reply_read()
     }
     if (device->isOpen() && device->isReadable()) {
         QMutexLocker locker(&mutex);
-        bytesToDecode.append(device->readAll());
+        QByteArray qb = (device->readAll());
+        bytesToDecode.append(qb);
         if (buffering) {
-            qCDebug(jtNinjamRoomStreamer) << "bytes downloaded  bytesToDecode:"<<bytesToDecode.size()
+            qCDebug(jtNinjamRoomStreamer) << "bytes downloaded" << qb.size()
+                                          << "bytesToDecode:" << bytesToDecode.size()
                                       << " bufferedSamples: " << bufferedSamples.getFrameLenght();
         }
     } else {

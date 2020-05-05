@@ -944,8 +944,8 @@ static int build_table(
     const void *codes, int codes_wrap, int codes_size,
     uint32_t code_prefix, int n_prefix
 ) {
-    int i, j, k, n, table_size, table_index, nb, n1, index, code_prefix2;
-    uint32_t code;
+    int i, j, k, n, table_size, table_index, nb, n1, index;
+    uint32_t code_prefix2, code;
     VLC_TYPE (*table)[2];
 
     table_size = 1 << table_nb_bits;

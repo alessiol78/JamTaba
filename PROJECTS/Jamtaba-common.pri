@@ -10,7 +10,7 @@ INCLUDEPATH += $$SOURCE_PATH/Common
 
 INCLUDEPATH += $$ROOT_PATH/libs/includes/ogg
 INCLUDEPATH += $$ROOT_PATH/libs/includes/vorbis
-INCLUDEPATH += $$ROOT_PATH/libs/includes/minimp3
+#INCLUDEPATH += $$ROOT_PATH/libs/includes/minimp3
 INCLUDEPATH += $$ROOT_PATH/libs/includes/ffmpeg
 INCLUDEPATH += $$ROOT_PATH/libs/includes/miniupnp
 
@@ -209,6 +209,7 @@ SOURCES += file/FileUtils.cpp
 SOURCES += recorder/JamRecorder.cpp
 SOURCES += recorder/ReaperProjectGenerator.cpp
 SOURCES += recorder/ClipSortLogGenerator.cpp
+SOURCES += minimp3/minimp3.c
 SOURCES += ninjam/Ninjam.cpp
 SOURCES += ninjam/client/ServerInfo.cpp
 SOURCES += ninjam/client/Service.cpp

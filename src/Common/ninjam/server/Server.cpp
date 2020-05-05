@@ -65,8 +65,8 @@ AdminCommand getAdminCommand(const QString &cmd)
 }
 
 RemoteUser::RemoteUser() :
-    lastKeepAliveReceived(QDateTime::currentMSecsSinceEpoch()),
     currentHeader(MessageHeader()),
+    lastKeepAliveReceived(QDateTime::currentMSecsSinceEpoch()),
     receivedServerInfos(false)
 {
 
@@ -112,8 +112,8 @@ void RemoteUser::setLastKeepAliveToNow()
 Voting::Voting(QObject *parent) :
     QObject(parent),
     value(0),
-    requiredVotes(0),
-    timer(nullptr)
+    timer(nullptr),
+    requiredVotes(0)
 {
 
 }
@@ -193,8 +193,8 @@ Server::Server() :
     bpi(16),
     topic("No topic!"),
     licence("No licence at moment!"),
-    maxChannels(2),
     maxUsers(4),
+    maxChannels(2),
     keepAlivePeriod(30),
     votingSettings({0.6, 10000}) // 60% for threshold, 60 seconds to vote expiration
 {

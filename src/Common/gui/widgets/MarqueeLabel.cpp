@@ -13,10 +13,10 @@ MarqueeLabel::MarqueeLabel(QWidget *parent) :
     QLabel(parent),
     textX(0),
     textY(0),
-    lastUpdate(0),
     animating(false),
-    timeSinceLastAnimation(0),
-    speedDecay(1)
+    speedDecay(1),
+    lastUpdate(0),
+    timeSinceLastAnimation(0)
 {
     lastUpdate = QDateTime::currentMSecsSinceEpoch(); // avoid start a animation when the widget is created
 }

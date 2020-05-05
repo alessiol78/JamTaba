@@ -402,7 +402,7 @@ ClientToServerChatMessage ClientToServerChatMessage::from(QIODevice *device, qui
 
     int readed = stream.readRawData(byteArray.data(), payload);
 
-    Q_ASSERT(readed == payload);
+    Q_ASSERT(readed == (int)payload);
 
     auto arrays = byteArray.split('\0');
 

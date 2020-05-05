@@ -9,6 +9,7 @@ extern "C" {
     #include <libswscale/swscale.h>
     #include <libswresample/swresample.h>
     #include <libavutil/imgutils.h>
+    #include <libavutil/pixfmt.h>
 }
 
 // these defines are necessary to compile in MSVC 2013

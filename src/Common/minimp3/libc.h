@@ -42,6 +42,7 @@
 #endif
 #include <math.h>
 
+#ifdef _MSC_VER
 #ifndef __int8_t_defined
     #define __int8_t_defined
     typedef unsigned char  uint8_t;
@@ -57,6 +58,7 @@
         typedef unsigned long long uint64_t;
         typedef   signed long long  int64_t;
     #endif
+#endif
 #endif
 
 #ifndef NULL

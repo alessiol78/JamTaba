@@ -87,11 +87,11 @@ private:
 // ++++++++++++++++++++++++++++++++++++++++
 
 Service::Service() :
-    lastSendTime(0),
-    initialized(false),
-    socket(nullptr),
     messagesHandler(new ServerMessagesHandler(this)),
-    serverKeepAlivePeriod(30)
+    socket(nullptr),
+    lastSendTime(0),
+    serverKeepAlivePeriod(30),
+    initialized(false)
 {
 
 }

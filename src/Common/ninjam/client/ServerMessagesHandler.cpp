@@ -5,8 +5,8 @@ using namespace ninjam;
 using namespace ninjam::client;
 
 ServerMessagesHandler::ServerMessagesHandler(Service *service) :
-    service(service),
-    device(nullptr)
+    device(nullptr),
+    service(service)
 {
     //
 }

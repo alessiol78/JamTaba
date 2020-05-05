@@ -29,15 +29,15 @@ IntervalProgressDisplay::PaintStrategy::~PaintStrategy()
 IntervalProgressDisplay::IntervalProgressDisplay(QWidget *parent) :
     QFrame(parent),
     paintMode(PaintShape::LINEAR),
-    showAccents(false),
     currentBeat(0),
     accentBeats(QList<int>()),
+    showAccents(false),
     usingLowContrastColors(false),
+    currentBeatColor(DEFAULT_CURRENT_BEAT_COLOR),
     accentsColor(DEFAULT_ACCENTS_COLOR),
     currentAccentColor(DEFAULT_CURRENT_ACCENT_COLOR),
     secondaryBeatsColor(DEFAULT_SECONDARY_BEATS_COLOR),
-    disabledBeatsColor(DEFAULT_DISABLED_BEATS_COLOR),
-    currentBeatColor(DEFAULT_CURRENT_BEAT_COLOR)
+    disabledBeatsColor(DEFAULT_DISABLED_BEATS_COLOR)
 
 {
     setBeatsPerInterval(32);

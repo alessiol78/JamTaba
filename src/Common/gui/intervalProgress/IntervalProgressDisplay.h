@@ -60,8 +60,8 @@ private:
 
     struct PaintContext
     {
-        int height;
         int width;
+        int height;
         int beatsPerInterval;
         int currentBeat;
         bool showingAccents;

@@ -1,7 +1,24 @@
 TARGET = Jamtaba2
 TEMPLATE = app
 
+!novideo {
+    DEFINES += USE_VIDEO_GRABBER
+} else {
+    message(DISABLE VIDEO)
+}
+
 include(../Jamtaba-common.pri)
+
+linux {
+message(INFO: for build on Ubuntu try)
+message($ sudo apt-get install -y libavformat-dev libswscale-dev libvorbis-dev libminiupnpc-dev portaudio19-dev libz-dev libx264-dev)
+message(* for disable VST plugin add CONFIG+=novst)
+message(* for disable VIDEO add CONFIG+=novideo)
+message(* for use mp3lame add CONFIG+=mp3lame and on Ubuntu try)
+message("  $ sudo apt-get install -y libmp3lame-dev")
+} else {
+    INCLUDEPATH += $$ROOT_PATH/libs/includes/portaudio
+}
 
 VPATH += $$SOURCE_PATH
 VPATH += $$SOURCE_PATH/Standalone
@@ -9,14 +26,17 @@ VPATH += $$SOURCE_PATH/Standalone
 INCLUDEPATH += $$SOURCE_PATH/Libs
 INCLUDEPATH += $$SOURCE_PATH/Libs/RtMidi
 
-INCLUDEPATH += $$ROOT_PATH/libs/includes/portaudio
+!novst {
+    DEFINES += USE_VST_PLUGIN
+} else {
+    message(DISABLE VST plugin)
+}
 INCLUDEPATH += $$ROOT_PATH/libs/includes/rtmidi
 
 INCLUDEPATH += $$SOURCE_PATH/Standalone
 
 INCLUDEPATH += $$SOURCE_PATH/Standalone/gui
 
-INCLUDEPATH += $$VST_SDK_PATH/VST2_SDK/pluginterfaces/vst2.x
 
 HEADERS += MainControllerStandalone.h
 HEADERS += gui/MainWindowStandalone.h
@@ -28,16 +48,10 @@ HEADERS += gui/FxPanel.h
 HEADERS += gui/FxPanelItem.h
 HEADERS += gui/MidiToolsDialog.h
 HEADERS += gui/CrashReportDialog.h
-
 HEADERS += audio/PortAudioDriver.h
 HEADERS += audio/Host.h
 HEADERS += midi/RtMidiDriver.h
-HEADERS += vst/VstPlugin.h
-HEADERS += vst/VstHost.h
-HEADERS += vst/VstLoader.h
 HEADERS += PluginFinder.h
-HEADERS += vst/VstPluginFinder.h
-HEADERS += vst/Utils.h
 HEADERS += Libs/SingleApplication/singleapplication.h
 HEADERS += Libs/RtMidi/RtMidi.h
 
@@ -56,12 +70,7 @@ SOURCES += gui/FxPanel.cpp
 SOURCES += gui/FxPanelItem.cpp
 SOURCES += gui/MidiToolsDialog.cpp
 SOURCES += midi/RtMidiDriver.cpp
-SOURCES += vst/VstPlugin.cpp
-SOURCES += vst/VstHost.cpp
 SOURCES += PluginFinder.cpp
-SOURCES += vst/VstPluginFinder.cpp
-SOURCES += vst/Utils.cpp
-SOURCES += vst/VstLoader.cpp
 SOURCES += Libs/SingleApplication/singleapplication.cpp
 SOURCES += Libs/RtMidi/RtMidi.cpp
 SOURCES += audio/PortAudioDriver.cpp
@@ -70,6 +79,33 @@ SOURCES += gui/CrashReportDialog.cpp
 mac:SOURCES += AU/AudioUnitHost.cpp
 mac:SOURCES += AU/AudioUnitPluginFinder.cpp
 
+!novst {
+    INCLUDEPATH += $$VST_SDK_PATH/VST2_SDK/pluginterfaces/vst2.x
+
+    DEFINES += USE_VST_PLUGIN
+
+    HEADERS += vst/VstPlugin.h
+    HEADERS += vst/VstHost.h
+    HEADERS += vst/VstLoader.h
+    HEADERS += vst/VstPluginFinder.h
+    HEADERS += vst/Utils.h
+
+    SOURCES += vst/VstPlugin.cpp
+    SOURCES += vst/VstHost.cpp
+    SOURCES += vst/VstPluginFinder.cpp
+    SOURCES += vst/Utils.cpp
+    SOURCES += vst/VstLoader.cpp
+
+    win32{
+        SOURCES += vst/WindowsVstPluginChecker.cpp
+    }
+    macx{
+        OBJECTIVE_SOURCES += vst/MacVstPluginChecker.mm
+    }
+    linux{
+        SOURCES += vst/LinuxVstPluginChecker.cpp
+    }
+}
 
 FORMS += gui/MidiToolsDialog.ui
 FORMS += gui/CrashReportDialog.ui
@@ -77,7 +113,6 @@ FORMS += gui/CrashReportDialog.ui
 #conditional sources to different platforms
 win32{
     SOURCES += audio/WindowsPortAudioDriver.cpp
-    SOURCES += vst/WindowsVstPluginChecker.cpp
 }
 macx{
 
@@ -85,7 +120,6 @@ macx{
     VPATH += $$AU_SDK_PATH
 
     SOURCES += audio/MacPortAudioDriver.cpp
-    OBJECTIVE_SOURCES += vst/MacVstPluginChecker.mm
 
     HEADERS += AU/AudioUnitPlugin.h
     OBJECTIVE_SOURCES += AU/AudioUnitPlugin.mm
@@ -94,7 +128,6 @@ macx{
 }
 linux{
     SOURCES += audio/LinuxPortAudioDriver.cpp
-    SOURCES += vst/LinuxVstPluginChecker.cpp
 }
 
 
@@ -163,10 +196,13 @@ linux{
     }
     message($$LIBS_PATH)
 
-    DEFINES += __LINUX_ALSA__
+    mp3lame {
+        DEFINES += __LINUX_LAME__
+        LIBS += -lmp3lame
+    }
+    INCLUDEPATH += /usr/include/miniupnpc
 
-
-    LIBS += -L$$PWD/../../libs/$$LIBS_PATH -lportaudio -lminimp3 -lvorbisfile -lvorbisenc -lvorbis -logg -lavformat -lavcodec -lswscale -lavutil -lswresample -lminiupnpc -lx264
+    LIBS += -L$$PWD/../../libs/$$LIBS_PATH -lportaudio -lvorbisfile -lvorbisenc -lvorbis -logg -lavformat -lavcodec -lswscale -lavutil -lswresample -lminiupnpc -lx264
     LIBS += -lasound
     LIBS += -ldl
     LIBS += -lz
