@@ -328,6 +328,8 @@ void PreferencesDialogStandalone::populateLastInputCombo()
     int currentFirstInput = ui->comboFirstInput->currentData().toInt();
     int items = 0;
     const int MAX_ITEMS = maxInputs - currentFirstInput;
+    ui->comboLastInput->setEnabled(MAX_ITEMS > 1);
+    ui->lastInputLabel_2->setEnabled(ui->comboLastInput->isEnabled());
     for (int i = currentFirstInput; items < MAX_ITEMS; i++, items++)
         ui->comboLastInput->addItem(audioDriver->getInputChannelName(i), i);
 

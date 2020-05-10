@@ -38,7 +38,8 @@ INCLUDEPATH += $$SOURCE_PATH/Standalone
 INCLUDEPATH += $$SOURCE_PATH/Standalone/gui
 
 
-HEADERS += MainControllerStandalone.h
+HEADERS += MainControllerStandalone.h \
+    ../../src/Common/audio/core/LinuxAlsaAudioDriver.h
 HEADERS += gui/MainWindowStandalone.h
 HEADERS += gui/PreferencesDialogStandalone.h
 HEADERS += gui/LocalTrackViewStandalone.h
@@ -58,7 +59,8 @@ HEADERS += Libs/RtMidi/RtMidi.h
 mac:HEADERS += AU/AudioUnitHost.h
 mac:HEADERS += AU/AudioUnitPlugin.h
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    ../../src/Common/audio/core/LinuxAlsaAudioDriver.cpp
 SOURCES += MainControllerStandalone.cpp
 SOURCES += ConfiguratorStandalone.cpp
 SOURCES += gui/MainWindowStandalone.cpp

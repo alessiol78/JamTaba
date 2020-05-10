@@ -2,7 +2,11 @@
 
 #include "midi/RtMidiDriver.h"
 #include "midi/MidiMessage.h"
+#if __LINUX_ALSA__
+#include "audio/core/LinuxAlsaAudioDriver.h"
+#else
 #include "audio/PortAudioDriver.h"
+#endif
 #include "audio/core/LocalInputNode.h"
 #include "audio/core/Plugins.h"
 #include "audio/Host.h"
@@ -412,6 +416,9 @@ controller::NinjamController *MainControllerStandalone::createNinjamController()
 audio::AudioDriver *MainControllerStandalone::createAudioDriver(
     const persistence::Settings &settings)
 {
+#if __LINUX_ALSA__
+    return new audio::LinuxAlsaAudioDriver(this);
+#else
     return new audio::PortAudioDriver(
         this,
         settings.getLastAudioInputDevice(),
@@ -423,6 +430,7 @@ audio::AudioDriver *MainControllerStandalone::createAudioDriver(
         settings.getLastSampleRate(),
         settings.getLastBufferSize()
         );
+#endif
 }
 
 MainControllerStandalone::MainControllerStandalone(persistence::Settings settings,
