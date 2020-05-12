@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstring>
+#include <QtMultimedia/qaudiobuffer.h>
 
 using audio::SamplesBuffer;
 using audio::AudioPeak;
@@ -104,6 +105,23 @@ float *SamplesBuffer::getSamplesArray(unsigned int channel) const
     Q_ASSERT(channel < samples.size());
 
     return const_cast<float *>(&(samples[channel][0]));
+}
+
+float *SamplesBuffer::getInterleavedSamples() const
+{
+    QAudioFormat format;
+    format.setCodec("audio/pcm");
+    format.setSampleRate(44100);
+    format.setSampleSize(32);
+    format.setSampleType(QAudioFormat::Float);
+    format.setChannelCount(2);
+    QAudioBuffer buffer(frameLenght,format);
+    QAudioBuffer::S32F *frames = buffer.data<QAudioBuffer::S32F>();
+    for(int i=0; i<buffer.frameCount(); i++) {
+        frames[i].left = samples[0][i];
+        frames[i].right = samples[1][i];
+    }
+    return buffer.data<float>();
 }
 
 void SamplesBuffer::applyGain(float gainFactor, float boostFactor)

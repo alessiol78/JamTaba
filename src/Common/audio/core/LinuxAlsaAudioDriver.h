@@ -7,18 +7,47 @@
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
 #include <alsa/asoundlib.h>
+#include <QThread>
 
 namespace audio {
+
+class AlsaWorker : public QObject
+{
+    Q_OBJECT
+
+public:
+    AlsaWorker(QObject *parent = 0) :
+        QObject(parent),
+        p_inpbuff(2),
+        p_outbuff(2),
+        p_run(false)
+    { p_buffSize = 0; }
+    bool init();
+    int getBufferSize() { return p_buffSize; }
+
+public slots:
+    void doWork();
+    void stop() { p_run = false; }
+
+private:
+    SamplesBuffer p_inpbuff;
+    SamplesBuffer p_outbuff;
+
+    snd_pcm_t *p_handle;
+    int p_buffSize;
+    bool p_run;
+};
 
 class LinuxAlsaAudioDriver : public AudioDriver
 {
     Q_OBJECT
+    QThread alsaThread;
 
 public:
 
     LinuxAlsaAudioDriver(controller::MainController *mainController) :
         AudioDriver(nullptr),
-        handle(nullptr)
+        worker(nullptr)
     {
 
     }
@@ -55,8 +84,11 @@ public:
 
     void openControlPanel(void *) override;
 
+signals:
+      void startAlsaWorker();
+
 private:
-    snd_pcm_t *handle;
+    AlsaWorker *worker;
 };
 
 } // namespace

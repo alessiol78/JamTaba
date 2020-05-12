@@ -40,6 +40,7 @@ public:
     bool isMono() const;
 
     float *getSamplesArray(unsigned int channel) const;
+    float *getInterleavedSamples() const;
 
     void discardFirstSamples(unsigned int samplesToDiscard); // discard N samples and set frame lenght to new size
     void append(const SamplesBuffer &other);

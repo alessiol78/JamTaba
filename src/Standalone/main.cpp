@@ -177,7 +177,9 @@ int main() {
 }
 #elif app == 3
 /*
-
+======================
+  PLAYBACK
+======================
 This example reads standard from input and writes
 to the default PCM device for 5 seconds of data.
 
@@ -304,7 +306,9 @@ int main() {
 }
 #elif app == 4
 /*
-
+======================
+  RECORDING
+======================
 This example reads from the default PCM device
 and writes to standard output for 5 seconds of data.
 
